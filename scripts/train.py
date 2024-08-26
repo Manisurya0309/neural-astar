@@ -14,6 +14,8 @@ from neural_astar.utils.data import create_dataloader
 from neural_astar.utils.training import PlannerModule, set_global_seeds
 from pytorch_lightning.callbacks import ModelCheckpoint
 
+import matplotlib.pyplot as plt
+
 
 @hydra.main(config_path="config", config_name="train")
 def main(config):
@@ -23,10 +25,29 @@ def main(config):
     train_loader = create_dataloader(
         config.dataset + ".npz", "train", config.params.batch_size, shuffle=True
     )
+
+    # visualise the dataloaders
+    print(f"train_loader : {train_loader}") 
+    print(f"train_loader : {train_loader.dataset}")    
+    first_item = train_loader.dataset[0]
+
+    # print(f"Structure of first_item: {first_item}")
+    print(f"Number of elements in first_item: {len(first_item)}")
+    mapdesigns, startdesign, goaldesign, optimalpath = first_item
+    
+    if isinstance(first_item, tuple):
+        print(f"Type of the first component: {type(mapdesigns)}") 
+        print(f"Type of the second component: {type(startdesign)}")
+    
+    # visualis the feature using matplot lib
+    plt.imshow(mapdesigns[0], cmap='gray')
+    plt.show()
+
+
     val_loader = create_dataloader(
         config.dataset + ".npz", "valid", config.params.batch_size, shuffle=False
     )
-
+    
     neural_astar = NeuralAstar(
         encoder_input=config.encoder.input,
         encoder_arch=config.encoder.arch,
@@ -34,6 +55,7 @@ def main(config):
         learn_obstacles=False,
         Tmax=config.Tmax,
     )
+
     checkpoint_callback = ModelCheckpoint(
         monitor="metrics/h_mean", save_weights_only=True, mode="max"
     )

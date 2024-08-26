@@ -200,14 +200,20 @@ class NeuralAstar(VanillaAstar):
         """
 
         cost_maps = self.encode(map_designs, start_maps, goal_maps)
-        obstacles_maps = (
-            map_designs if not self.learn_obstacles else torch.ones_like(start_maps)
-        )
+        # obstacles_maps = (
+        #     map_designs if not self.learn_obstacles else torch.ones_like(start_maps)
+        # )
+        
+        if self.learn_obstacles:
+            obstacles_maps = torch.ones_like(start_maps)
+        else:
+            obstacles_maps = map_designs
 
-        return self.perform_astar(
+        out = self.perform_astar(
             cost_maps,
             start_maps,
             goal_maps,
             obstacles_maps,
             store_intermediate_results,
         )
+        return out

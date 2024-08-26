@@ -2,7 +2,7 @@ seed: 1234
 dataset: "planning-datasets/data/mpd/mazes_032_moore_c8"
 modeldir: "model"
 resultdir: "gif"
-planner: "na"   # either na or va
+planner: "e1"   # either na or va
 
 encoder:
   input: "m+"

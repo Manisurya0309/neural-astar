@@ -6,6 +6,10 @@ from neural_astar.planner import NeuralAstar, VanillaAstar
 from neural_astar.utils.data import create_dataloader, visualize_results
 from neural_astar.utils.training import load_from_ptl_checkpoint
 
+import torch 
+from torchvision.utils import save_image
+import numpy as np
+
 
 @hydra.main(config_path="config", config_name="create_gif")
 def main(config):
@@ -48,14 +52,41 @@ def main(config):
         goal_maps[problem_id : problem_id + 1],
         store_intermediate_results=True,
     )
-    frames = [
-        visualize_results(
+    frames = []
+    # log map_designs here
+    # print(f" map designs : {map_designs[problem_id : problem_id + 1].shape}")
+
+    for intermediate_results in outputs.intermediate_results:
+        # intermediate_results["map"] = map_designs[problem_id : problem_id + 1]
+        # print(f"inter : {intermediate_results}")
+        frame = visualize_results(
             map_designs[problem_id : problem_id + 1], intermediate_results, scale=4
         )
-        for intermediate_results in outputs.intermediate_results
-    ]
+        # print(viz)
+        frames.append(frame)
+
+    
+    # frames = [
+    #     visualize_results(
+    #         map_designs[problem_id : problem_id + 1], intermediate_results, scale=4
+    #     )
+    #     for intermediate_results in outputs.intermediate_results
+    # ]
+    # save frames as .jpg
+    # t = savedir
+    # print(f"t : {t}")
+    # exit()
+    for i, frame in enumerate(frames):
+        frame_tensor = torch.from_numpy(frame).permute(2,0,1).float() / 255.0
+        save_image(frame_tensor, f"{savedir}/frame_{i:04d}.jpg")
+        # frame is ndarray, save it as jpg.  frame is a 3D array  (H, W, C)   C is 3     (RGB)  0-255  uint8 
+        # convert to image and save it.
+        #              
+        # frame.save(f"{savedir}/frame_{i:04d}.jpg")
+
     clip = mpy.ImageSequenceClip(frames + [frames[-1]] * 15, fps=30)
     clip.write_gif(f"{savedir}/video_{dataname}_{problem_id:04d}.gif")
+    clip.write_videofile(f"{savedir}/video_{dataname}_{problem_id:04d}.mp4")
 
 
 if __name__ == "__main__":
