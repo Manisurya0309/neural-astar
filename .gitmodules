@@ -1,3 +1,6 @@
 [submodule "planning-datasets"]
 	path = planning-datasets
 	url = https://github.com/omron-sinicx/planning-datasets
+[submodule "neural-astar"]
+	path = neural-astar
+	url = https://github.com/omron-sinicx/neural-astar

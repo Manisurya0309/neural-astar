@@ -37,6 +37,7 @@ def get_heuristic(goal_maps: torch.tensor, tb_factor: float = 0.001) -> torch.te
 
     # some preprocessings to deal with mini-batches
     num_samples, H, W = goal_maps.shape[0], goal_maps.shape[-2], goal_maps.shape[-1]
+    print(f"num_samples: {num_samples}, H: {H}, W: {W}")
     grid = torch.meshgrid(torch.arange(0, H), torch.arange(0, W))
     loc = torch.stack(grid, dim=0).type_as(goal_maps)
     loc_expand = loc.reshape(2, -1).unsqueeze(0).expand(num_samples, 2, -1)
@@ -265,3 +266,15 @@ class DifferentiableAstar(nn.Module):
         return AstarOutput(
             histories.unsqueeze(1), path_maps.unsqueeze(1), intermediate_results
         )
+
+# if __name__ == "__main__":
+#     df = DifferentiableAstar()
+#     random_tensor = torch.rand(3, 4)
+#     adjusted_tensor = random_tensor.unsqueeze(0).unsqueeze(0)
+#     a,b,c = df.forward(
+#         adjusted_tensor,
+#         adjusted_tensor,
+#         adjusted_tensor,
+#         adjusted_tensor,
+#         False
+#     )

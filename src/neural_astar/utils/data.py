@@ -127,10 +127,10 @@ class MazeDataset(data.Dataset):
     def _process(self, filename: str):
         with np.load(filename) as f:
             dataset2idx = {"train": 0, "valid": 4, "test": 8}
-            idx = dataset2idx[self.dataset_type]
-            map_designs = f["arr_" + str(idx)]
-            goal_maps = f["arr_" + str(idx + 1)]
-            opt_policies = f["arr_" + str(idx + 2)]
+            idx = dataset2idx[self.dataset_type] # 0
+            map_designs = f["arr_" + str(idx)] # 0 (800, 32, 32)
+            goal_maps = f["arr_" + str(idx + 1)] # 1 (800, 32, 32)
+            opt_policies = f["arr_" + str(idx + 2)] #
             opt_dists = f["arr_" + str(idx + 3)]
 
         # Set proper datatypes
@@ -160,6 +160,7 @@ class MazeDataset(data.Dataset):
             opt_traj = self.get_opt_traj(start_map, goal_map, opt_policy)
             start_maps.append(start_map)
             opt_trajs.append(opt_traj)
+
         start_map = np.concatenate(start_maps)
         opt_traj = np.concatenate(opt_trajs)
 
@@ -293,3 +294,6 @@ class WarCraftDataset(data.Dataset):
 
     def __len__(self):
         return self.map_designs.shape[0]
+
+
+     
